@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from django import forms
@@ -84,7 +83,7 @@ class PostPagesTests(TestCase):
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField
         }
-        # Проверяем, что типы полей формы в словаре context 
+        # Проверяем, что типы полей формы в словаре context
         # соответствуют ожиданиям
         for value, expected in form_fields.items():
             with self.subTest(value=value):
@@ -111,10 +110,8 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('post_edit', kwargs={
                 'username': self.user.username,
-                'post_id': self.post.id,
-            }
-                    )
-        )
+                'post_id': self.post.id})
+            )
         self.assertEqual(response.context['post'], self.post)
 
     # Проверка словаря контекста страницы профайла пользователя /<username>/
@@ -132,10 +129,8 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('post', kwargs={
                 'username': self.user.username,
-                'post_id': self.post.id,
-            }
-                    )
-        )
+                'post_id': self.post.id})
+            )
         post_context = {
             'post': self.post,
             'user': self.user
