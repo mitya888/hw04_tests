@@ -37,7 +37,7 @@ class PostFormTests(TestCase):
             'group': self.group.id
         }
         # Отправляем POST-запрос
-        response = self.authorized_client.post(
+        self.authorized_client.post(
             reverse('new_post'),
             data=form_data,
             follow=True

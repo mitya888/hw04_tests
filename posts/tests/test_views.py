@@ -110,8 +110,9 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('post_edit', kwargs={
                 'username': self.user.username,
-                'post_id': self.post.id})
-            )
+                'post_id': self.post.id
+            })
+        )
         self.assertEqual(response.context['post'], self.post)
 
     # Проверка словаря контекста страницы профайла пользователя /<username>/
@@ -129,8 +130,9 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('post', kwargs={
                 'username': self.user.username,
-                'post_id': self.post.id})
-            )
+                'post_id': self.post.id
+            })
+        )
         post_context = {
             'post': self.post,
             'user': self.user
