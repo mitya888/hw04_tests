@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from posts.models import Post, Group, User
+from posts.models import Post, Group, USER_MODEL
 
 
 class PostsModelTest(TestCase):
@@ -8,11 +8,8 @@ class PostsModelTest(TestCase):
         super().setUpClass()
 
         cls.client = Client()
-        cls.user = User.objects.create_user(username='vasa88')
+        cls.user = USER_MODEL.objects.create_user(username='vasa88')
         cls.client.force_login(cls.user)
-        cls.post = Post.objects.create(
-            text='Текст тестового поста', author=cls.user
-        )
 
         cls.group = Group.objects.create(
             title='Название',
@@ -26,7 +23,7 @@ class PostsModelTest(TestCase):
         )
 
     def test_verbose_name(self):
-        post = PostsModelTest.post
+        post = self.post
         field_verboses = {
             'text': 'Содержание',
             'group': 'Группа',

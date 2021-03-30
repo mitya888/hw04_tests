@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Отдельный пост{% endblock %}
+{% block header %}<h3>Отдельный пост</h3>{% endblock %}
 {% block content %}
 <main>
     <div class="row">
@@ -36,7 +37,7 @@
                 <div class="card-body">
                     <p class="card-text">
                         <!-- Ссылка на страницу автора в атрибуте href; username автора в тексте ссылки -->
-                        <a href="/{{post.author.username}}/"><strong class="d-block text-gray-dark">@{{post.author.username}}</strong></a>
+                        <a href="/{{ post.author.username }}/"><strong class="d-block text-gray-dark">@{{ post.author.username }}</strong></a>
                         <!-- Текст поста -->
                         {{ post.text|linebreaksbr }}
                     </p>

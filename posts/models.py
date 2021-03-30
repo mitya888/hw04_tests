@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 USER_MODEL = get_user_model()
-User = get_user_model()
 
 
 class Group(models.Model):
@@ -76,6 +75,6 @@ class Post(models.Model):
     def __str__(self):
         return self.text
 
-    # class Meta:
-    #     verbose_name = 'Группа'
-    #     verbose_name_plural = 'Группы'
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'

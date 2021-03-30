@@ -3,9 +3,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from posts.forms import PostForm
-from posts.models import Group, Post
-
-User = get_user_model()
+from posts.models import Group, Post, USER_MODEL
 
 
 class PostFormTests(TestCase):
@@ -14,7 +12,7 @@ class PostFormTests(TestCase):
         super().setUpClass()
         cls.form = PostForm()
         # Создаем пользователя
-        cls.user = User.objects.create_user(username='lex')
+        cls.user = USER_MODEL.objects.create_user(username='lex')
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
 

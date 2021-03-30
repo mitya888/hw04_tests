@@ -11,7 +11,8 @@ User = get_user_model()
 
 
 def index(request):
-    post_list = Post.objects.all().order_by('-pub_date')
+    """"Представление главной страницы постов"""
+    post_list = Post.objects.order_by('-pub_date')
     # Если порядок сортировки определен в классе Meta модели,
     # запрос будет выглядить так:
     # post_list = Post.objects.all()
@@ -25,6 +26,7 @@ def index(request):
 
 
 def group_posts(request, slug):
+    """"Представление страницы сообщества"""
     group = get_object_or_404(Group, slug=slug)
     paginator = Paginator(
         Post.objects.filter(group=group).order_by('-pub_date'), 10)
@@ -45,10 +47,11 @@ def new_post(request):
             post.author = request.user
             form.save()
             return redirect("index")
-    return render(request, "new_post.html", {'form': form})
+    return render(request, "post_new.html", {'form': form})
 
 
 def profile(request, username):
+    """"Представление страницы профайла"""
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=user)
     paginator = Paginator(posts.order_by('-pub_date'), 10)
@@ -64,13 +67,15 @@ def profile(request, username):
 
 
 def post_view(request, username, post_id):
+    """"Представление страницы отдельной записи"""
     author = get_object_or_404(User, username=username)
-    post = get_object_or_404(Post, id=post_id)
+    post = get_object_or_404(Post, id=post_id, author__username=username)
     return render(request, "post.html", {"author": author, "post": post})
 
 
 @login_required
 def post_edit(request, username, post_id):
+    """"Представление страницы редактирования записи"""
     post = get_object_or_404(Post, author__username=username, id=post_id)
     if request.user != post.author:
         return redirect('post', post_id=post.id, username=post.author.username)

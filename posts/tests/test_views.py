@@ -2,7 +2,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django import forms
 
-from posts.models import Group, Post, User
+from posts.models import Group, Post, USER_MODEL
 
 
 class PostPagesTests(TestCase):
@@ -10,7 +10,7 @@ class PostPagesTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         # Создаем пользователя
-        cls.user = User.objects.create_user(username='gena')
+        cls.user = USER_MODEL.objects.create_user(username='gena')
         cls.guest_client = Client()
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
@@ -32,7 +32,7 @@ class PostPagesTests(TestCase):
         # Собираем в словарь пары "имя_html_шаблона: reverse(name)"
         templates_page_names = {
             'index.html': reverse('index'),
-            'new_post.html': reverse('new_post'),
+            'post_new.html': reverse('new_post'),
             'group.html': reverse('group_posts', kwargs={
                 'slug': 'test-slug'}),
             'about/tech.html': reverse('about:tech'),
