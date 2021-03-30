@@ -48,14 +48,13 @@ class PostURLTest(TestCase):
     def test_new_posts_url_guest_client(self):
         """Страница /new/ создания поста не доступна анонимному пользователю"""
         response = self.guest_client.get('/new/')
-        self.assertEqual(response.status_code, 302) 
+        self.assertEqual(response.status_code, 302)
 
     def test_urls_template(self):
         """Какой шаблон вызывается для страниц:"""
         templates_url_names = {
             'index.html': '/',
             'group.html': '/group/test-slug/',
-            'post_new.html': '/new/',
             'post_new.html': f'/{self.user.username}/{self.post.id}/edit/'
         }
         for template, url in templates_url_names.items():
