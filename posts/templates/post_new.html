@@ -17,8 +17,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if post %}
-        <form action="{% url 'post_edit' username=user.username post_id=post.id %}" method="post">
+        <form {% if post %} action="{% url 'post_edit' username=user.username post_id=post.id %}" method="post">
     {% else %}
         <form action="{% url 'new_post' %}" method="post">
     {% endif %}

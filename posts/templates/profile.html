@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Профайл{% endblock %}
-{% block header %}<h3>Профайл</h3>{% endblock %}
+{% block title %}{{ author.get_full_name }}{% endblock %}
+{% block header %}{{ author.get_full_name }}{% endblock %}
 {% block content %}
 <main>
 <div class="row">

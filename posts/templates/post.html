@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Отдельный пост{% endblock %}
-{% block header %}<h3>Отдельный пост</h3>{% endblock %}
+{% block header %}Отдельный пост{% endblock %}
 {% block content %}
 <main>
     <div class="row">
@@ -37,14 +37,15 @@
                 <div class="card-body">
                     <p class="card-text">
                         <!-- Ссылка на страницу автора в атрибуте href; username автора в тексте ссылки -->
-                        <a href="/{{ post.author.username }}/"><strong class="d-block text-gray-dark">@{{ post.author.username }}</strong></a>
+                        <a href="{% url 'post' username=post.author.username post_id=post.pk %}"><strong
+                            class="d-block text-gray-dark">@{{ post.author.username }}</strong></a>
                         <!-- Текст поста -->
                         {{ post.text|linebreaksbr }}
                     </p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group ">
                             {% if user == post.author %}
-                                <a class="btn btn-sm text-muted" href="/{{ post.author.username }}/{{ post.pk }}/edit"
+                                <a class="btn btn-sm text-muted" href="{% url 'post_edit' post.author.username post.pk %}"
                                    role="button">Редактировать</a>
                             {% endif %}
                         </div>
