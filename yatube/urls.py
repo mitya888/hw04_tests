@@ -6,7 +6,7 @@ from posts import views
 
 
 handler404 = "posts.views.page_not_found"  # noqa
-handler500 = "posts.views.server_error"  # noqa 
+handler500 = "posts.views.server_error"  # noqa
 
 urlpatterns = [
     # дополнительно к стандартному фреймворку авторизаций
