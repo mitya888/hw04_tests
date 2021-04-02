@@ -105,3 +105,8 @@ class PostURLTest(TestCase):
             with self.subTest(url=url):
                 response = self.authorized_client.get(url)
                 self.assertEqual(response.status_code, 200)
+
+    def test_url_404(self):
+        """Доступность страницы 404"""
+        response = self.guest_client.get('404')
+        self.assertEqual(response.status_code, 404)

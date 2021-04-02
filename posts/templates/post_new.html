@@ -18,9 +18,7 @@
 
 {% block content %}
         <form {% if post %} action="{% url 'post_edit' username=user.username post_id=post.id %}" method="post">
-    {% else %}
-        <form action="{% url 'new_post' %}" method="post">
-    {% endif %}
+        <form {% else %} action="{% url 'new_post' %}" method="post" {% endif %}>
 
 {% csrf_token %}
 {% for field in form %}
