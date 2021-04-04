@@ -1,14 +1,14 @@
 from django.contrib.auth import get_user_model
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 
-from .forms import PostForm
-from .models import Post, Group
+from .forms import PostForm, CommentForm
+from .models import Post, Group, Comment
 
 User = get_user_model()
 
+import pdb
 
 def index(request):
     """"Представление главной страницы постов"""
@@ -41,7 +41,7 @@ def new_post(request):
     """Представление формы новой записи"""
     form = PostForm()
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST,files=request.FILES or None)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -66,24 +66,59 @@ def profile(request, username):
     return render(request, 'profile.html', context)
 
 
+# def post_view(request, username, post_id):
+#     """"Представление страницы отдельной записи"""
+#     author = get_object_or_404(User, username=username)
+#     post = get_object_or_404(Post, id=post_id)
+#     return render(request, "post.html", {"author": author, "post": post})
+
+
 def post_view(request, username, post_id):
-    """"Представление страницы отдельной записи"""
-    author = get_object_or_404(User, username=username)
-    post = get_object_or_404(Post, id=post_id)
-    return render(request, "post.html", {"author": author, "post": post})
+    post = get_object_or_404(Post, pk=post_id, author__username=username)
+    post_list = Post.objects.filter(author=post.author)
+    form = CommentForm()
+    comments = post.comments.select_related('author').all()
+    # breakpoint()
+    return render(
+        request,
+        'post.html',
+        {'form': form,
+         'post': post,
+         'author': post.author,
+         'comments': comments,
+         })
+
+
+# @login_required
+# def post_edit(request, username, post_id):
+#     """"Представление страницы редактирования записи"""
+#     post = get_object_or_404(Post, author__username=username, id=post_id)
+#     if request.user != post.author:
+#         return redirect('post', post_id=post.id, username=post.author.username)
+#     form = PostForm(request.POST or None, instance=post)
+
+#     if form.is_valid():
+#         post.save()
+#         return redirect('post', post_id=post.id, username=post.author.username)
+#     return render(request, 'post_new.html', {'form': form, 'post': post})
 
 
 @login_required
 def post_edit(request, username, post_id):
-    """"Представление страницы редактирования записи"""
-    post = get_object_or_404(Post, author__username=username, id=post_id)
-    if request.user != post.author:
-        return redirect('post', post_id=post.id, username=post.author.username)
-    form = PostForm(request.POST or None, instance=post)
-    if form.is_valid():
-        post.save()
-        return redirect('post', post_id=post.id, username=post.author.username)
-    return render(request, 'post_new.html', {'form': form, 'post': post})
+    profile = get_object_or_404(User, username=username)
+    post = get_object_or_404(Post, pk=post_id, author=profile)
+    if request.user != profile:
+        return redirect('post', username=username, post_id=post_id)
+    # добавим в form свойство files
+    form = PostForm(request.POST or None, files=request.FILES or None, instance=post)
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return redirect("post", username=request.user.username, post_id=post_id)
+    return render(
+        request, 'post_new.html', {'form': form, 'post': post},
+    ) 
 
 
 def page_not_found(request, exception):
@@ -99,3 +134,16 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return render(request, "misc/500.html", status=500)
+
+
+@login_required
+def add_comment(request, username, post_id):
+    post = get_object_or_404(Post, pk=post_id, author__username=username)
+    form = CommentForm(request.POST or None,)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        comment.post = post
+        comment.save()
+        return redirect('post', username=username, post_id=post_id)
+    return render(request, "comments.html", {"form": form})
