@@ -1,4 +1,6 @@
 from django.test import TestCase, Client
+from django.urls import reverse
+from django.core.cache import cache
 
 from posts.models import Group, Post, USER_MODEL
 
@@ -110,3 +112,20 @@ class PostURLTest(TestCase):
         """Доступность страницы 404"""
         response = self.guest_client.get('404')
         self.assertEqual(response.status_code, 404)
+
+
+    def test_index_page_cache(self):
+        """Testing correct caching the index template"""
+        response = self.authorized_client.get(reverse('index'))
+        last_post = response.context['page'][0]
+        post = Post.objects.create(
+            text='Новый пост',
+            author=self.user,
+            )
+        response = self.authorized_client.get(reverse('index'))
+        current_post = response.context['page'][0]
+        self.assertEqual(last_post, current_post, 'Caching is not working.')
+        cache.clean()
+        response = self.authorized_client.get(reverse('index'))
+        current_post = response.context['page'][0]
+        self.assertEqual(current_post, post, 'Caching is not working.')

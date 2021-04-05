@@ -8,7 +8,6 @@ from .models import Post, Group, Comment
 
 User = get_user_model()
 
-import pdb
 
 def index(request):
     """"Представление главной страницы постов"""
@@ -66,17 +65,11 @@ def profile(request, username):
     return render(request, 'profile.html', context)
 
 
-# def post_view(request, username, post_id):
-#     """"Представление страницы отдельной записи"""
-#     author = get_object_or_404(User, username=username)
-#     post = get_object_or_404(Post, id=post_id)
-#     return render(request, "post.html", {"author": author, "post": post})
-
-
 def post_view(request, username, post_id):
+    """"Представление страницы отдельного поста"""
     post = get_object_or_404(Post, pk=post_id, author__username=username)
     post_list = Post.objects.filter(author=post.author)
-    form = CommentForm()
+    form = CommentForm(request.POST or None)
     comments = post.comments.select_related('author').all()
     # breakpoint()
     return render(
@@ -89,22 +82,9 @@ def post_view(request, username, post_id):
          })
 
 
-# @login_required
-# def post_edit(request, username, post_id):
-#     """"Представление страницы редактирования записи"""
-#     post = get_object_or_404(Post, author__username=username, id=post_id)
-#     if request.user != post.author:
-#         return redirect('post', post_id=post.id, username=post.author.username)
-#     form = PostForm(request.POST or None, instance=post)
-
-#     if form.is_valid():
-#         post.save()
-#         return redirect('post', post_id=post.id, username=post.author.username)
-#     return render(request, 'post_new.html', {'form': form, 'post': post})
-
-
 @login_required
 def post_edit(request, username, post_id):
+    """"Представление страницы редактирования поста"""
     profile = get_object_or_404(User, username=username)
     post = get_object_or_404(Post, pk=post_id, author=profile)
     if request.user != profile:
@@ -118,12 +98,11 @@ def post_edit(request, username, post_id):
             return redirect("post", username=request.user.username, post_id=post_id)
     return render(
         request, 'post_new.html', {'form': form, 'post': post},
-    ) 
+    )
 
 
 def page_not_found(request, exception):
-    # Переменная exception содержит отладочную информацию,
-    # выводить её в шаблон пользователской страницы 404 мы не станем
+    """"Представление страницы 404"""
     return render(
         request,
         "misc/404.html",
@@ -133,11 +112,13 @@ def page_not_found(request, exception):
 
 
 def server_error(request):
+    """"Представление страницы 500"""
     return render(request, "misc/500.html", status=500)
 
 
 @login_required
 def add_comment(request, username, post_id):
+    """"Функция для сохранения комментарий"""
     post = get_object_or_404(Post, pk=post_id, author__username=username)
     form = CommentForm(request.POST or None,)
     if form.is_valid():
@@ -145,5 +126,4 @@ def add_comment(request, username, post_id):
         comment.author = request.user
         comment.post = post
         comment.save()
-        return redirect('post', username=username, post_id=post_id)
-    return render(request, "comments.html", {"form": form})
+    return redirect('post', username=username, post_id=post_id)
